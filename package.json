@@ -1,0 +1,30 @@
+{
+  "name": "child-watcher",
+  "version": "0.1.1",
+  "description": "Run workers easy and don\'t worry about them crushes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NumminorihSF/child-watcher.git"
+  },
+  "keywords": [
+    "worker",
+    "watcher",
+    "refork",
+    "child_process"
+  ],
+  "author": "Konstantine Petryaen <numminorihsf@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NumminorihSF/child-watcher/issues"
+  },
+  "homepage": "https://github.com/NumminorihSF/child-watcher#readme",
+  "dependencies": {
+    "crypt-maker": "^0.1.7",
+    "herald-client": "^0.1.3",
+    "herald-server": "^0.1.6"
+  }
+}
