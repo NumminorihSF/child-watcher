@@ -1,7 +1,7 @@
 {
   "name": "child-watcher",
   "version": "0.1.1",
-  "description": "Run workers easy and don\'t worry about them crushes",
+  "description": "Run workers easy and don't worry about them crushes",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
