@@ -22,3 +22,39 @@
  * SOFTWARE.
  */
 
+if (module.parent){
+    module.exports = {Master: require(__dirname+'/lib/master.js'), Child: require(__dirname+'/lib/child.js')}
+}
+else {
+    var master = new (require(__dirname+'/lib/master.js'))();
+
+    master.newChild('first');
+    master.newChild('second',{shouldRespawn: true});
+    master.on('first', 'close', function(data){
+        console.log('first closed with code', data);
+    });
+    master.on('second', 'close', function(data){
+        console.log('second closed with code %d, respawn', data);
+    });
+    master.ipc('first', {parameters: 1}, function(err, data){
+        console.log('f1',err, data);
+    });
+    master.ipc('second', {parameters: 1}, function(err, data){
+        console.log('s1',err, data);
+    });
+    master.ipc('second', {parameters: 2}, function(err, data){
+        console.log('s2',err, data);
+    });
+    master.send('first', 'some string to send', function(err, data){
+        console.log('f2', err, data);
+    });
+    master.sendJSON('first', {some: 'json'}, function(err, data){
+        console.log('f3', err, data);
+    });
+    master.on('first', 'error', function(err){
+        console.error(err);
+    });
+    master.on('second', 'error', function(err){
+        console.error(err);
+    });
+}
