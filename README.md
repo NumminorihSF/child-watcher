@@ -48,7 +48,7 @@ Create listener on process with name. Listen event with eventName and spawn `cal
 
 #TODO
 
-other methods
+At this moment, the best dock is source files. Need make doc.
 
 # LICENSE - "MIT License"
 
