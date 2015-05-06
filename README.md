@@ -28,7 +28,7 @@ Simple example:
         });
         
 ```
-This example run script 'child-watcher/lib/worker.js' and respawn it after close.
+This example run script 'child-watcher/lib/example_worker.js' and respawn it after close.
 
 # Methods
 
@@ -45,7 +45,7 @@ Create child process, and member it with `name` that should be unique.
 * `name` - String. Unique name of child
 * `options` - Object. options for child manager constructor (see below). Defailt `{}`
 * `options.logger` Logger object
-* `options.filePath` - String. Path to worker's file. Default `__dirname+'/worker.js'` (lib/worker.js)
+* `options.filePath` - String. Path to worker's file. Default `__dirname+'/example_worker.js'` (lib/example_worker.js)
 * `options.env` - Object. Environment for child process. Default `process.env`
 * `options.shouldRespawn` Boolean. `true`, if need respawn, else `false` or `undefined`. Default `false`
 * `options.command` String. Command to run
@@ -112,7 +112,7 @@ A constructor of CM.
 
 * `options` - Object. options for child process. Defailt `{}`
 * `options.logger` Logger object
-* `options.filePath` - String. Path to worker's file. Default `__dirname+'/worker.js'` (lib/worker.js)
+* `options.filePath` - String. Path to worker's file. Default `__dirname+'/example_worker.js'` (lib/example_worker.js)
 * `options.env` - Object. Environment for child process. Default `process.env`
 * `options.shouldRespawn` Boolean. `true`, if need respawn, else `false` or `undefined`. Default `false`
 * `options.command` String. Command to run. Default `node`
