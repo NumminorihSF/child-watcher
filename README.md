@@ -98,6 +98,12 @@ Send object (stringified) to stdin of child with name.
 An ipc call of some function on child with name. How child should work with it - see below.
 Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
 
+## master.ipcAny(ipcParams, callback)
+
+An ipc call of some function on child with smallest time of answers. How child should work with it - see below.
+Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
+
+
 # ChildManager
 
 An object, that master returns.
@@ -177,7 +183,6 @@ Sends kill signal to child process and stop auto-respawning
 
 If you don't want to auto-respawn child process, use `childMan.setShouldRespawn(false)`.
 If you want to auto-respawn it - use  `childMan.setShouldRespawn(true)`.
-
 
 
 
