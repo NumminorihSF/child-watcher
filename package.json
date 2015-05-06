@@ -1,6 +1,6 @@
 {
   "name": "child-watcher",
-  "version": "0.1.7-2",
+  "version": "0.1.8",
   "description": "Run workers easy and don't worry about them crushes",
   "main": "index.js",
   "scripts": {
