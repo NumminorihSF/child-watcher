@@ -42,13 +42,144 @@ This example run script 'child-watcher/lib/worker.js' and respawn it after close
 
 Create child process, and member it with `name` that should be unique. 
 
+* `name` - String. Unique name of child
+* `options` - Object. options for child manager constructor (see below). Defailt `{}`
+* `options.logger` Logger object
+* `options.filePath` - String. Path to worker's file. Default `__dirname+'/worker.js'` (lib/worker.js)
+* `options.env` - Object. Environment for child process. Default `process.env`
+* `options.shouldRespawn` Boolean. `true`, if need respawn, else `false` or `undefined`. Default `false`
+* `options.command` String. Command to run
+* `options.arguments` String[]. Arguments for command (without filePath for nodejs)
+
+Example:
+`master.newChild('first');`
+
+Returns ChildManager object. If Child with such name already exist, doesn't create and just return it.
+
+
+
 ## master.on(name, eventName, callback)
 
 Create listener on process with name. Listen event with eventName and spawn `callback(data)`
 
-#TODO
+Example:
+```js
+    //emit then process close. data is close code
+    master.on('first', 'close', function(data){
+        console.log('first closed with code', data);
+    });
+    //emit then child send something to stdout, that ends with '\r\n' if cat JSON.parse - emit result of parse, else emit string
+    master.on('first', 'data', function(data){
+        console.log('first emit some data', data);
+    });
+    //then child send something to stderr, emit this. without 'error' emitter - process will end with error
+    master.on('first', 'error', function(err){
+        console.error(err);
+    });
+```
 
-At this moment, the best dock is source files. Need make doc.
+If child process should not respawn, listener will removed after process exit.
+The description of events see below at ChildManager.
+
+## master.getChild(name)
+
+Returns ChildManager object, if Child with such name exists. If no such child - returns null.
+
+## master.send(name, message, callback)
+
+Send message to stdin of child with name.
+
+## master.sendJSON(name, object, callback)
+
+Send object (stringified) to stdin of child with name.
+
+## master.ipc(name, ipcParams, callback)
+
+An ipc call of some function on child with name. How child should work with it - see below.
+Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
+
+# ChildManager
+
+An object, that master returns.
+
+```js
+    var childMan = master.getChild('first');
+```
+
+## new ChildManager(options)
+
+A constructor of CM.
+
+* `options` - Object. options for child process. Defailt `{}`
+* `options.logger` Logger object
+* `options.filePath` - String. Path to worker's file. Default `__dirname+'/worker.js'` (lib/worker.js)
+* `options.env` - Object. Environment for child process. Default `process.env`
+* `options.shouldRespawn` Boolean. `true`, if need respawn, else `false` or `undefined`. Default `false`
+* `options.command` String. Command to run. Default `node`
+* `options.arguments` String[]. Arguments for command (without filePath for nodejs). Default `[]`
+
+## childMan.spawn()
+
+Spawn child process. Called automaticaly, then create childManager object.
+If command is `'node'` or `'nodejs'` or `'iojs'` - spawn Child object, that will do `require(options.filePath)(setWorkerFunction)`
+
+## setWorkerFunction
+
+In worker you should define some function that will emit data from master process, and decide that it will do.
+
+Example of worker:
+```js
+
+    var worker = new (require('events')).EventEmitter();
+    worker.on('ipc', function(ipc){
+        //ipc.id - id for master to spawn callback
+        //ipc.params - parameters, that sended to worker
+        //ipc.callback - callback function. First argument is error, second is data
+    
+        if (ipc.id == 1) return ipc.callback(new Error('some error for first ipc'));
+        else return ipc.callback(null, 'everithyng is ok. Params: '+JSON.stringify(ipc.params));
+    });
+    worker.on('json', function(json){
+        //do something with json
+    });
+    
+    worker.on('string', function(string){
+        //do something with string
+    });
+    
+    worker.on('data', function(someData){
+        //do something with any data (ipc, json of string)
+    });
+    
+    module.exports = function(setWorker){
+        setWorker(worker);
+    };
+```
+
+## childMan.send(message, callback)
+
+Send message to stdin of child.
+
+## childMan.sendJSON(object, callback)
+
+Send object (stringified) to stdin of child.
+
+## childMan.ipc(ipcParams, callback)
+
+An ipc call of some function on child. How child should work with it - see below.
+Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
+
+## childMan.kill(signal)
+
+Sends kill signal to child process and stop auto-respawning
+
+## childMan.setShouldRespawn(booleanVal)
+
+If you don't want to auto-respawn child process, use `childMan.setShouldRespawn(false)`.
+If you want to auto-respawn it - use  `childMan.setShouldRespawn(true)`.
+
+
+
 
 # LICENSE - "MIT License"
 
