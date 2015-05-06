@@ -23,7 +23,11 @@
  */
 
 if (module.parent){
-    module.exports = {Master: require(__dirname+'/lib/master.js'), Child: require(__dirname+'/lib/child.js')}
+    module.exports = {
+        ClusterMaster: require(__dirname+'/lib/cluster.js'),
+        Master: require(__dirname+'/lib/master.js'),
+        Child: require(__dirname+'/lib/child.js')
+    }
 }
 else {
     var master = new (require(__dirname+'/lib/master.js'))();

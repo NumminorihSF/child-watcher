@@ -129,7 +129,7 @@ A constructor of CM.
 Spawn child process. Called automaticaly, then create childManager object.
 If command is `'node'` or `'nodejs'` or `'iojs'` - spawn Child object, that will do `require(options.filePath)(setWorkerFunction)`
 
-## setWorkerFunction
+## setWorkerFunction (IPC)
 
 In worker you should define some function that will emit data from master process, and decide that it will do.
 
@@ -172,7 +172,7 @@ Send object (stringified) to stdin of child.
 
 ## childMan.ipc(ipcParams, callback)
 
-An ipc call of some function on child. How child should work with it - see below.
+An ipc call of some function on child.
 Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
 
 ## childMan.kill(signal)
@@ -183,6 +183,30 @@ Sends kill signal to child process and stop auto-respawning
 
 If you don't want to auto-respawn child process, use `childMan.setShouldRespawn(false)`.
 If you want to auto-respawn it - use  `childMan.setShouldRespawn(true)`.
+
+
+# ClusterMaster
+
+## new ClusterMaster(workerOptions[, masterOptions])
+
+The constructor of cluster. If you need many copies of some worker - you can use this.
+```js
+
+    var cmaster = new (require('child-watcher').ClusterMaster)({filePath: 'worker.js'}, {});
+```
+It runs 1 worker. `workerOptions` is some like `childMan` options.
+
+`masterOptions` is an object. Include: 
+
+* `.ceiling` - number. Count of max workers processes. Can't be more than cpus*2. Default `cpus*2`.
+* `.maxWorkDuration` - number (ms). How long worker can do task. If duration of tasks is bigger - will try to spawn one more worker. Default `20`.
+* `.minSpawnTimeout` - number (ms). How often can spawn workers. Default `1000` ms. 
+
+
+## cmaster.ipc(ipcParams, callback)
+
+An ipc call of some function on child. Task will be emitted by most free worker.
+Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
 
 
 
