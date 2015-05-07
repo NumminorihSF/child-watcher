@@ -199,7 +199,10 @@ It runs 1 worker. `workerOptions` is some like `childMan` options.
 `masterOptions` is an object. Include: 
 
 * `.ceiling` - number. Count of max workers processes. Can't be more than cpus*2. Default `cpus*2`.
-* `.maxWorkDuration` - number (ms). How long worker can do task. If duration of tasks is bigger - will try to spawn one more worker. Default `20`.
+* `.maxWorkDuration` - number (ms). 
+How long worker can do task. If duration of tasks is bigger - will try to spawn one more worker. 
+Also, if `durationOfWork*3<maxWorkDuration` and more than 1 worker - try close one worker (by send `SIGTERM`). 
+Default `20`.
 * `.minSpawnTimeout` - number (ms). How often can spawn workers. Default `1000` ms. 
 
 
