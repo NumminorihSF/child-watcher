@@ -36,16 +36,18 @@ if (module.parent){
     }
 }
 else {
-    var master = new (require(__dirname+'/lib/master.js'))();
+    var master = new (require(__dirname+'/lib/v.next/master.js'))();
 
     master.newChild('first');
     master.newChild('second',{shouldRespawn: true});
-    master.on('first', 'close', function(data){
-        console.log('first closed with code', data);
+    master.getChild('second').on('spawned', function(data){
+        console.log('SPAWNED');
     });
-    master.on('second', 'close', function(data){
-        console.log('second closed with code %d, respawn', data);
+
+    master.on('close', function(data){
+        console.log(data.childName+' closed with code', data);
     });
+
     master.ipc('first', {parameters: 1}, function(err, data){
         console.log('f1',err, data);
     });
@@ -61,10 +63,8 @@ else {
     master.sendJSON('first', {some: 'json'}, function(err, data){
         console.log('f3', err, data);
     });
-    master.on('first', 'error', function(err){
+    master.on('error', function(err){
         console.error(err);
     });
-    master.on('second', 'error', function(err){
-        console.error(err);
-    });
+
 }
