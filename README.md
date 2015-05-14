@@ -30,12 +30,18 @@ Simple example:
 ```
 This example run script 'child-watcher/lib/example_worker.js' and respawn it after close.
 
+### Next API's version
+
+For use new api version - replace `new (require('child-watcher').MODULE)()` to `new (require('child-watcher').next.MODULE)()`
+
 # Methods
 
-## new Master(options)
+## new Master(options, [defaultChildOptions])
 
 `options` is an Object. May be `{}`. Contains properties:
 * `.logger` - Logger object - to log inner events
+
+`defaultChildOptions` available in next version.
 
 
 ## master.newChild(name, [options]) 
@@ -58,7 +64,9 @@ Returns ChildManager object. If Child with such name already exist, doesn't crea
 
 
 
-## master.on(name, eventName, callback)
+## master.on(name, eventName, callback) -- deprecated
+
+Will be deleted at v1.0.0.
 
 Create listener on process with name. Listen event with eventName and spawn `callback(data)`
 
@@ -81,6 +89,20 @@ Example:
 If child process should not respawn, listener will removed after process exit.
 The description of events see below at ChildManager.
 
+## master.on(eventName, callback) -- next API
+
+Create listener on master. Listen event with eventName and spawn `callback(data)` where `data.childName` - name of child process.
+
+Example:
+```js
+    master.on('someEpicEvent', function(eventData){
+        console.log('epic event emited', eventData);
+    });
+```
+
+If child process should not respawn, listener will removed after process exit.
+
+
 ## master.getChild(name)
 
 Returns ChildManager object, if Child with such name exists. If no such child - returns null.
@@ -98,10 +120,16 @@ Send object (stringified) to stdin of child with name.
 An ipc call of some function on child with name. How child should work with it - see below.
 Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
 
-## master.ipcAny(ipcParams, callback)
+## master.ipcAny(ipcParams, callback) -- depracated
 
 An ipc call of some function on child with smallest time of answers. How child should work with it - see below.
 Callback called with (error, result). If no answer in 60 second - will return Error `TIMEOUT`
+
+## master.ipcBroadcast(ipcParams, callback) -- next API
+
+An ipc call of some function on every child. How child should work with it - see below.
+Callback called with (errors, results). If no answer in 60 second - will return Error `TIMEOUT`
+If any error - return array of errors and array of results, else return `null` as error arg and array of results.
 
 
 # ChildManager
@@ -185,20 +213,27 @@ If you don't want to auto-respawn child process, use `childMan.setShouldRespawn(
 If you want to auto-respawn it - use  `childMan.setShouldRespawn(true)`.
 
 
-# ClusterMaster
+# Cluster (old ClusterMaster)
 
-## new ClusterMaster(workerOptions[, masterOptions])
+At usual - master method works the same. Other methods you can see below.
+
+## new Cluster(workerOptions[, masterOptions]) -- depracated
+## new Cluster(masterOptions[, workerOptions]) -- next API
 
 The constructor of cluster. If you need many copies of some worker - you can use this.
 ```js
 
-    var cmaster = new (require('child-watcher').ClusterMaster)({filePath: 'worker.js'}, {});
+    var cmaster = new (require('child-watcher').next.Cluster)({}, {filePath: 'worker.js'}); //new
 ```
 It runs 1 worker. `workerOptions` is some like `childMan` options.
 
 `masterOptions` is an object. Include: 
 
-* `.ceiling` - number. Count of max workers processes. Can't be more than cpus*2. Default `cpus*2`.
+* `.scheduler` - next API. string. One of `'DummyRoundRobin', 'LoadFree', 'Random', 'RoundRobin'`.
+* `.ceiling` - deprecated. number. Count of max workers processes. Can't be more than cpus*2. Default `cpus*2`.
+* `.processMax` - next API. number. Count of max workers processes. Can't be more than cpus*2. Default `cpus*2`.
+* `.processMin` - next API. number. Count of min workers processes. Default - 1. Can be 0.
+* `.idleTimeout` - next API. number (ms). Not for all schedulers. How long can child process idle. If idle is more then this - try close it.
 * `.maxWorkDuration` - number (ms). 
 How long worker can do task. If duration of tasks is bigger - will try to spawn one more worker. 
 Also, if `durationOfWork*3<maxWorkDuration` and more than 1 worker - try close one worker (by send `SIGTERM`). 

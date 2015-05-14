@@ -25,8 +25,14 @@
 if (module.parent){
     module.exports = {
         ClusterMaster: require(__dirname+'/lib/cluster.js'),
+        Cluster: require(__dirname+'/lib/cluster.js'),
         Master: require(__dirname+'/lib/master.js'),
-        Child: require(__dirname+'/lib/child.js')
+        Child: require(__dirname+'/lib/child.js'),
+        next: {
+            Cluster: require(__dirname+'/lib/v.next/cluster.js'),
+            Master: require(__dirname+'/lib/v.next/master.js'),
+            Child: require(__dirname+'/lib/v.next/child.js')
+        }
     }
 }
 else {
